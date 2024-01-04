@@ -1,0 +1,197 @@
+[
+{
+	"uri": "/vi/3-create-iam-role/3.1-role-databrew/",
+	"title": "Create a role for AWS Glue DataBrew",
+	"tags": [],
+	"description": "",
+	"content": "Tạo role cho AWS Glue DataBrew Truy cập AWS Management Console, tìm kiếm và chọn IAM. Nhấp vào Roles trong bảng Access management. Nhấp vào Create role để tạo IAM role mới. Trong phần Trusted entity type, chọn AWS service. Nhấp vào Choose a service or use case, sau đó tìm kiếm DataBrew và chọn DataBrew. Nhấp Next để tiến hành bước tiếp theo. Trong thanh tìm kiếm, tìm và chọn AWSGlueDataBrewRolePolicy sau đó nhấp Next. Trong phần Role name, đặt tên cho role là AWSGlueDataBrewRole và sau đó nhấp Create role. "
+},
+{
+	"uri": "/vi/1-introduce/",
+	"title": "Giới thiệu",
+	"tags": [],
+	"description": "",
+	"content": "AWS Glue DataBrew là dịch vụ xử lý dữ liệu quy mô lớn cho nhiều nhiệm vụ như phân tích dữ liệu và học máy. Nó có thể tích hợp với các dịch vụ khác như Amazon S3, AWS Lambda, AWS Lake Formation và AWS QuickSight. Trong AWS Glue DataBrew, chúng ta có thể tạo các công việc để thực hiện các thao tác trên tập dữ liệu, bao gồm dự án và công thức, với các bước xử lý dữ liệu.\nAWS Lambda có thể tự động hóa việc thực hiện công việc AWS Glue DataBrew mỗi khi có đối tượng được thêm vào S3 bucket. Chúng ta sẽ học cách sử dụng tất cả các tính năng trên trong lab này.\nSơ đồ dưới đây mô tả kiến trúc của lab:\nSơ đồ bên dưới miêu tả kiến trúc của lab: "
+},
+{
+	"uri": "/vi/4-databrew-project/4.1-connect-dataset/",
+	"title": "Kết nối với một tập dữ liệu",
+	"tags": [],
+	"description": "",
+	"content": "Kết nối với một tập dữ liệu Truy cập vào AWS Management Console, tìm kiếm và chọn AWS Glue DataBrew. Từ thanh bên, nhấn vào mục DATASETS. Nhấn Connect new dataset. Trong phần Dataset name, đặt tên tập dữ liệu là BrewedData. Trong phần Connect to new dataset, chọn Amazon S3. Trong phần Enter your source from S3, nhập s3://data-bucket-databrew/Input/. Trong phần Additional configurations, chọn CSV làm Selected file type. Nhấn Create dataset. "
+},
+{
+	"uri": "/vi/",
+	"title": "Session Management",
+	"tags": [],
+	"description": "",
+	"content": "Tự động hóa Xử lý dữ liệu với AWS Glue DataBrew Tổng quan Trong lab này, bạn sẽ tạo một S3 bucket và tải dữ liệu lên để xử lý. Sau đó, bạn sẽ tạo các roles cho phép sử dụng dịch vụ AWS Glue DataBrew và AWS Lambda. Tiếp theo, bạn sẽ tạo một tập dữ liệu trong AWS Glue DataBrew và kết nối nó với S3 bucket. Bạn cũng sẽ tạo một AWS Glue DataBrew Project và quy định các bước xử lý dữ liệu (công thức) sẽ được thực hiện trên tập dữ liệu. Thêm vào đó, bạn sẽ tạo một AWS Glue DataBrew Job để có thể thực thi dự án và lưu kết quả vào S3 bucket. Cuối cùng, bạn sẽ tự động hóa toàn bộ quá trình này bằng cách tạo một Lambda Function sẽ được kích hoạt mỗi khi một tệp mới được tải lên S3 bucket.\nAmazon S3: Đây là dịch vụ lưu trữ đám mây của AWS cung cấp lưu trữ có thể mở rộng cho các loại dữ liệu khác nhau như hình ảnh, video và tệp.\nAWS Glue DataBrew: là công cụ xử lý dữ liệu trực quan giúp người dùng làm sạch và chuẩn hóa dữ liệu mà không cần viết code.\nAWS Lambda: là một dịch vụ điện toán phi máy chủ, theo định hướng sự kiện, giúp bạn chạy mã cho hầu hết mọi loại ứng dụng hoặc dịch vụ backend mà không cần cung cấp hay quản lý máy chủ.\nNội dung Giới thiệu Chuẩn bị AWS S3 Tạo role thực thi Thiết lập AWS Glue DataBrew Project Tạo Lambda function Dọn dẹp tài nguyên "
+},
+{
+	"uri": "/vi/5-create-lambda-automation/5.1-create-lambda/",
+	"title": "Tạo Lambda function",
+	"tags": [],
+	"description": "",
+	"content": "Tạo Lambda function Truy cập vào AWS Management Console, tìm kiếm và chọn Lambda. Nhấn Create function. Chọn Author from scratch và trong phần Function name, đặt tên là TriggerLambda. Sau đó, trong phần Runtime, chọn Python 3.11. Nhấn Change default execution role và chọn Use existing role trong phần Execution role. Tìm kiếm và chọn TriggerExecutionRole. Nhấn Create function. "
+},
+{
+	"uri": "/vi/2-prerequiste/2.1-createec2/",
+	"title": "Tạo S3 bucket",
+	"tags": [],
+	"description": "",
+	"content": "Tạo S3 bucket Truy cập vào AWS Management Console, tìm kiếm và chọn S3. Nhấn Create bucket. Đặt tên cho bucket: data-bucket-databrew. Trong menu thả xuống, chọn us-east-1 US East (N. Virginia). Giữ các cấu hình khác ở mặc định và nhấn Create bucket. Đợi khoảng 3 phút để quá trình hoàn tất.\n"
+},
+{
+	"uri": "/vi/6-clear-up/6.1-delete-lambda/",
+	"title": "Xóa Lambda function",
+	"tags": [],
+	"description": "",
+	"content": "Xóa Lambda function Truy cập vào AWS Management Console, tìm kiếm và chọn Lambda. Chọn Lambda function mà chúng ta đã tạo trong lab này. Nhấn vào Actions, sau đó nhấn vào tùy chọn Delete. Nhập delete trong hộp thoại và nhấn Delete. "
+},
+{
+	"uri": "/vi/5-create-lambda-automation/5.2-configure-lambda/",
+	"title": "Cấu hình Lambda function",
+	"tags": [],
+	"description": "",
+	"content": "Cấu hình Lambda function Cuộn xuống phần Code source của Lambda function, thay thế code trong tệp lambda_function.py với đoạn code sau và nhấn Deploy để triển khai code. import boto3 def lambda_handler(event, context): s3_bucket = event[\u0026#39;Records\u0026#39;][0][\u0026#39;s3\u0026#39;][\u0026#39;bucket\u0026#39;][\u0026#39;name\u0026#39;] s3_object_key = event[\u0026#39;Records\u0026#39;][0][\u0026#39;s3\u0026#39;][\u0026#39;object\u0026#39;][\u0026#39;key\u0026#39;] databrew_client = boto3.client(\u0026#39;databrew\u0026#39;) databrew_client.update_dataset( Name=\u0026#39;BrewedData\u0026#39;, Input={ \u0026#39;S3InputDefinition\u0026#39;: { \u0026#39;Bucket\u0026#39;: s3_bucket, \u0026#39;Key\u0026#39;: s3_object_key } } ) response = databrew_client.start_job_run( Name=\u0026#39;BrewedDataJob\u0026#39; ) Cuộn lên phần Function overview và nhấn nút Add trigger. Chọn S3 từ menu Select a source. Trong phần Bucket, chọn data-bucket-databrew.\nTrong phần Prefix, nhập Input/.\nTrong phần Suffix, nhập .csv.\nTích vào dấu kiểm ở bên trái và nhấn Add. "
+},
+{
+	"uri": "/vi/2-prerequiste/",
+	"title": "Chuẩn bị AWS S3 ",
+	"tags": [],
+	"description": "",
+	"content": "Trong bước này, chúng ta sẽ tạo một S3 Bucket. Sau đó, chúng ta sẽ tạo các thư mục Input và Output trong bucket này và tải tệp CSV lên thư mục Input.\nSơ đồ kiến trúc: Nội dung Tạo S3 bucket Tạo thư mục trong S3 bucket Tải tệp CSV lên Bucket "
+},
+{
+	"uri": "/vi/4-databrew-project/4.2-create-project/",
+	"title": "Tạo một databrew project",
+	"tags": [],
+	"description": "",
+	"content": "Tạo một databrew project Trong trang DataBrew \u0026gt; Datasets, nhấn vào BrewedData. Nhấn Create project with this dataset. Trong phần Project name, nhập BrewedDataProject. Trong phần Select a dataset, chọn My datasets và sau đó chọn tập dữ liệu BrewedData. Trong phần Permissions, nhấn vào Role name và chọn AWSGlueDataBrewRole. Nhấn Create Project. Việc tạo project có thể mất vài phút.\n"
+},
+{
+	"uri": "/vi/3-create-iam-role/3.2-role-lambda/",
+	"title": "Tạo role cho Lambda function",
+	"tags": [],
+	"description": "",
+	"content": "Tạo role cho Lambda function Truy cập AWS Management Console, tìm kiếm và chọn IAM. Nhấp vào Roles trong bảng Access management. Nhấp vào Create role để tạo IAM role mới. Trong phần Trusted entity type, chọn AWS service. Nhấp vào Choose a service or use case, sau đó tìm kiếm Lambda và chọn Lambda. Nhấp Next để tiến hành bước tiếp theo. Trong thanh tìm kiếm, tìm và chọn TriggerExecutionPolicy sau đó nhấp Next. Trong phần Role name, đặt tên cho role là TriggerExecutionRole và sau đó nhấp Create role. "
+},
+{
+	"uri": "/vi/2-prerequiste/2.2-createiamrole/",
+	"title": "Tạo thư mục trong bucket",
+	"tags": [],
+	"description": "",
+	"content": "Tạo thư mục trong bucket Mở bucket data-bucket-databrew. Nhấn Create folder. Đặt tên thư mục là Input. Tạo một thư mục khác tên Output tương tự như vừa trên. "
+},
+{
+	"uri": "/vi/6-clear-up/6.2-delete-databrew-job/",
+	"title": "Xóa AWS Glue DataBrew job",
+	"tags": [],
+	"description": "",
+	"content": "Xóa AWS Glue DataBrew job Truy cập vào AWS Management Console, tìm kiếm và chọn AWS Glue DataBrew, sau đó nhấn vào Jobs. Chọn job chúng ta đã tạo trong lab này. Nhấn vào Actions, sau đó nhấn vào tùy chọn Delete. Nhấn Delete trong hộp thoại Delete BrewedDataJob?. "
+},
+{
+	"uri": "/vi/5-create-lambda-automation/5.3-test-automation/",
+	"title": "Kiểm tra sự tự động hóa",
+	"tags": [],
+	"description": "",
+	"content": "Kiểm tra sự tự động hóa Truy cập vào trang Amazon S3 \u0026gt; Buckets và chọn data-bucket-databrew. Tải xuống tệp CSV netflix2.csv và tải tệp này lên thư mục Input. Điều này sẽ kích hoạt hàm TriggerLambda, sau đó sẽ chạy việc sử lý dữ liệu và lưu kết quả vào S3 bucket. Chúng ta có thể kiểm tra bằng cách truy cập vào trang DataBrew \u0026gt; Jobs và nhận thấy rằng trạng thái của BrewedDataJob là Running. Ngay khi trạng thái công việc chuyển thành Succeeded, truy cập vào thư mục Output của S3 bucket. Nhấn vào thư mục BrewedDataJob\u0026hellip;. mới. Truy vấn tệp CSV như chúng ta đã làm trước đây. "
+},
+{
+	"uri": "/vi/2-prerequiste/2.3-upcsvfile/",
+	"title": "Tải tệp CSV lên Bucket",
+	"tags": [],
+	"description": "",
+	"content": "Tải tệp CSV lên Bucket Tải tệp CSV về máy bằng cách nhấp vào đây: netflix1.csv Mở bucket data-bucket-databrew. Nhấp vào thư mục Input. Nhấp vào Upload sau đó nhấp vào Add files. Chọn tệp netflix1 bạn vừa tải về và nhấp vào Open. Nhấp vào Upload và đợi cho đến khi tải lên thành công. "
+},
+{
+	"uri": "/vi/3-create-iam-role/",
+	"title": "Tạo role thực thi",
+	"tags": [],
+	"description": "",
+	"content": "Trong bước này, chúng ta sẽ tạo các IAM role để cung cấp cho người dùng các quyền hạn cần thiết để sử dụng dịch vụ AWS Glue DataBrew và cho phép hàm Lambda thực hiện các thao tác trên dịch vụ AWS Glue DataBrew và S3 bucket.\nSơ đồ kiến trúc: Content Tạo role cho AWS Glue DataBrew Tạo role cho Lambda function "
+},
+{
+	"uri": "/vi/4-databrew-project/4.3-build-recipes/",
+	"title": "Xây dựng quy trình xử lý dữ liệu",
+	"tags": [],
+	"description": "",
+	"content": "Xây dựng quy trình xử lý dữ liệu Hãy lọc ra các chương trình TV trong tập dữ liệu như sau: Nhấn vào cột type và chọn tùy chọn FILTER từ menu trên cùng. Trong bảng Filter values, dưới Filter condition, chọn Is exactly và xóa tùy chọn Movie. Nhấn Add to recipe. Trong thanh bên Filter values bên phải, nhấn Apply. Hãy sắp xếp các chương trình TV dựa trên năm phát hành theo thứ tự tăng dần: Cuộn sang phải trong tập dữ liệu và nhấn vào cột release_year, chọn tùy chọn SORT từ menu trên cùng và chọn Ascending. Từ thanh bên Sort column bên phải, nhấn Apply. Trong cột show_id, chữ s xuất hiện chung trong tất cả các mục và không cung cấp nhiều thông tin cho cột. Hãy loại bỏ chữ s khỏi các mục: Nhấn vào cột show_id, chọn CLEAN từ menu trên cùng và chọn tùy chọn Letters từ danh sách thả xuống. Từ thanh bên Remove letters bên phải, nhấn Apply. Cột type không cung cấp nhiều thông tin vì chúng ta đã biết tất cả các mục nhập đều là chương trình TV, vậy nên hãy xóa nó. Nhấn vào cột type, chọn tùy chọn COLUMN từ menu trên cùng và chọn tùy chọn Delete từ danh sách thả xuống. Từ thanh bên Delete column bên phải, nhấn Apply. "
+},
+{
+	"uri": "/vi/6-clear-up/6.3-delete-databrew-project/",
+	"title": "Xóa AWS Glue DataBrew project",
+	"tags": [],
+	"description": "",
+	"content": "Xóa AWS Glue DataBrew project Truy cập vào AWS Management Console, tìm kiếm và chọn AWS Glue DataBrew, sau đó nhấn vào Projects. Chọn project mà chúng ta đã tạo trong lab này. Nhấn vào Actions, sau đó nhấn vào tùy chọn Delete. Chọn Delete attached recipe và nhấn Delete trong hộp thoại DeleteBrewedDataProject?. "
+},
+{
+	"uri": "/vi/4-databrew-project/4.4-create-job/",
+	"title": "Taọ một databrew job",
+	"tags": [],
+	"description": "",
+	"content": "Tạo một databrew job Trên trang BrewedDataProject, nhấn vào Create Job ở góc trên bên phải của màn hình. Trong phần Job name, đặt tên là BrewedDataJob. Trong phần S3 location, nhập s3://data-bucket-databrew/Output/. Nhấn vào nút Settings ở góc trên bên phải của phần Job output settings. Trong phần File partitioning, chọn Single file output và nhấn Save. Trong phần Permissions, nhấn Role name, chọn phần Choose an existing IAM role và chọn vai trò AWSGlueDataBrewRole. Nhấn Create and run job. "
+},
+{
+	"uri": "/vi/4-databrew-project/",
+	"title": "Thiết lập AWS Glue DataBrew Project",
+	"tags": [],
+	"description": "",
+	"content": "AWS Glue DataBrew cho phép chúng ta thực hiện một dự án và lưu kết quả vào các nguồn như Amazon S3. Trong bước này, chúng ta sẽ tạo một job từ một project. Với job này, chúng ta có thể thực thi project để thực hiện bốn bước xử lý dữ liệu được liệt kê trong công thức trên tập dữ liệu và lưu kết quả trong một thư mục đầu ra.\nSơ đồ kiến trúc: Nội dung Kết nối với một tập dữ liệu Tạo một databrew project Xây dựng quy trình xử lý dữ liệu Tạo một databrew job Xác minh kết quả "
+},
+{
+	"uri": "/vi/6-clear-up/6.4-delete-databrew-dataset/",
+	"title": "Xóa tập dữ liệu AWS Glue DataBrew",
+	"tags": [],
+	"description": "",
+	"content": "Xóa tập dữ liệu AWS Glue DataBrew Truy cập vào AWS Management Console, tìm kiếm và chọn AWS Glue DataBrew, sau đó nhấn vào Datasets. Chọn tập dữ liệu mà chúng ta đã tạo trong lab này. Nhấn vào Actions, sau đó nhấn vào tùy chọn Delete. Nhấn Delete trong hộp thoại Delete BrewedData?. "
+},
+{
+	"uri": "/vi/6-clear-up/6.5-delete-iam/",
+	"title": "Delete the IAM roles",
+	"tags": [],
+	"description": "",
+	"content": "Xóa các IAM roles Truy cập vào AWS Management Console, tìm kiếm và chọn IAM, sau đó nhấn vào Roles. Chọn AWSGlueDataBrewServiceRole và TriggerExecutionRole từ danh sách. Nhấn Delete và nhập delete trong hộp thoại xác nhận. Nhấn Delete. "
+},
+{
+	"uri": "/vi/5-create-lambda-automation/",
+	"title": "Tạo Lambda function",
+	"tags": [],
+	"description": "",
+	"content": "AWS Lambda cho phép chúng ta thực thi code mà không cần duy trì hoặc triển khai máy chủ. Chúng có thể được coi là một thành phần cốt lõi của thiết kế không máy chủ và chỉ tính phí người dùng cho thời gian tính toán được sử dụng. Lambda hỗ trợ nhiều ngôn ngữ lập trình, bao gồm Python, Java, Go và Ruby. Chúng ta sẽ sử dụng hàm này để kích hoạt xử lý dữ liệu trong DataBrew job khi một tệp CSV mới được tải lên bucket. Hàm sẽ đọc tệp, thực thi AWS Glue DataBrew job mà chúng ta đã quy định trước đó trên tệp dữ liệu, và ghi tệp kết quả vào bucket.\nSơ đồ kiến trúc: Nội dung Tạo Lambda Function Cấu hình Lambda function Kiểm tra sự tự động hóa "
+},
+{
+	"uri": "/vi/4-databrew-project/4.5-check-result/",
+	"title": "Xác minh kết quả",
+	"tags": [],
+	"description": "",
+	"content": "Xác minh kết quả Truy cập vào trang Amazon S3 \u0026gt; Buckets và nhấn vào bucket data-bucket-databrew. Nhấn vào thư mục Output và sau đó nhấn vào thư mục BrewedDataJob\u0026hellip;.. Chọn tệp bên trong thư mục, nhấn vào Actions, và chọn Query with S3 select. Cuộn xuống phần SQL query và nhập truy vấn sau: SELECT \\* FROM s3object s LIMIT 5 Nhấn Run SQL query. "
+},
+{
+	"uri": "/vi/6-clear-up/",
+	"title": "Dọn dẹp tài nguyên",
+	"tags": [],
+	"description": "",
+	"content": "Để hoàn lab, chúng ta sẽ xóa tất cả các tài nguyên đã tạo. Hãy tiến hành xóa các tài nguyên này theo thứ tự ngược lại với thứ tự tạo, bắt đầu với Lambda function.\nNội dung Xóa Lambda function Xóa Databrew job Xóa Databrew project Xóa Databrew dataset Xóa các IAM roles Xóa S3 bucket "
+},
+{
+	"uri": "/vi/6-clear-up/6.6-delete-s3/",
+	"title": "Xóa S3 bucket",
+	"tags": [],
+	"description": "",
+	"content": "Xóa S3 bucket Truy cập vào AWS Management Console, tìm kiếm và chọn S3, sau đó chọn bucket data-bucket-databrew. Nhấn vào nút Empty để xóa tất cả các đối tượng trong bucket. Nhập permanently delete và nhấn confirm để xóa dữ liệu. Nhấn Delete, sau đó nhập tên bucket và xác nhận việc xóa bucket. "
+},
+{
+	"uri": "/vi/categories/",
+	"title": "Categories",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "/vi/tags/",
+	"title": "Tags",
+	"tags": [],
+	"description": "",
+	"content": ""
+}]

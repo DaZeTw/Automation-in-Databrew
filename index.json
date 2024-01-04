@@ -1,0 +1,197 @@
+[
+{
+	"uri": "/4-databrew-project/4.1-connect-dataset/",
+	"title": "Connect to a dataset",
+	"tags": [],
+	"description": "",
+	"content": "Connect to a dataset Navigate to the AWS Management Console, search for and select AWS Glue DataBrew. From the sidebar, click the DATASETS section. Click Connect new dataset. Under the Dataset name section, name the dataset BrewedData. Under the Connect to new dataset section, choose Amazon S3. Under the Enter your source from S3 section, enter s3://data-bucket-databrew/Input/. Under the Additional configurations section, select CSV as Selected file type. Click the Create dataset. "
+},
+{
+	"uri": "/5-create-lambda-automation/5.1-create-lambda/",
+	"title": "Create a Lambda Function",
+	"tags": [],
+	"description": "",
+	"content": "Create a Lambda Function Navigate to the AWS Management Console, search for and select Lambda. Click Create function. Select Author from scratch and under the Function name section, name it TriggerLambda. Then, under the Runtime section, select Python 3.11. Click Change default execution role and select Use existing role under Execution role section. Search for and select TriggerExecutionRole. Click Create function. "
+},
+{
+	"uri": "/3-create-iam-role/3.1-role-databrew/",
+	"title": "Create a role for AWS Glue DataBrew",
+	"tags": [],
+	"description": "",
+	"content": "Create a role for AWS Glue DataBrew Navigate to the AWS Management Console, search for and select IAM. Click Roles under Access management on the sidebar. Click Create role to create a new IAM role. Under Trusted entity type, select AWS service. Click Choose a service or use case, then search DataBrew and choose DataBrew. Click Next to proceed to the next step. In the search bar, search and select AWSGlueDataBrewRolePolicy then click Next. In the Role name section, name the role AWSGlueDataBrewRole and then click Create role. "
+},
+{
+	"uri": "/2-prerequiste/2.1-createec2/",
+	"title": "Create S3 bucket",
+	"tags": [],
+	"description": "",
+	"content": "Create S3 bucket Navigate to the AWS Management Console, search for and select S3. Click Create bucket. Name for the bucket:data-bucket-databrew. In the region drop-down menu, select us-east-1 US East (N. Virginia). Leave other configurations as default and click Create bucket. Wait for about 3 minutes for the process to complete.\n"
+},
+{
+	"uri": "/6-clear-up/6.1-delete-lambda/",
+	"title": "Delete the Lambda function",
+	"tags": [],
+	"description": "",
+	"content": "Delete the Lambda function Navigate to the AWS Management Console, search for and select Lambda. Select the function we created using the check mark. Click Actions, then click the Delete option. Enter delete in the confirmation pop-up and click Delete. "
+},
+{
+	"uri": "/1-introduce/",
+	"title": "Introduction",
+	"tags": [],
+	"description": "",
+	"content": "AWS Glue DataBrew can be used to process and prepare large volumes of data for different tasks, like data analytics and machine learning. It can also be integrated with other services, like Amazon S3, AWS Lambda, AWS Lake Formation, and AWS QuickSight.\nIn AWS Glue DataBrew:\nWe can create jobs that can perform operations on a dataset.\nThese jobs include a project.\nThe project, in turn, includes a recipe.\nA recipe is composed of a sequence of data processing steps and a dataset that can be connected to an S3 bucket to pick up data from there.\nAWS Lambda can be used to automate the execution of an AWS Glue DataBrew job whenever an object is added to the S3 bucket. Let’s learn how to use all the features mentioned above in this lab.\nThe diagram below illustrates the lab architecture: "
+},
+{
+	"uri": "/",
+	"title": "Session Management",
+	"tags": [],
+	"description": "",
+	"content": "Using aws glue databrew and lambda to automate data processing Overall In this Cloud Lab, you’ll create an S3 bucket and upload the data to be processed. After that, you’ll create execution roles allowing the intended use of AWS Glue DataBrew and AWS Lambda services. Afterward, you’ll create a dataset in AWS Glue DataBrew and connect it to the S3 bucket. You’ll also create an AWS Glue DataBrew Project and define data processing steps (recipe) that will be performed on the dataset. Moreover, you’ll create a job that can execute the project and save results in the S3 bucket. Lastly, you’ll automate this whole process by creating a Lambda function that will be triggered every time a new file is uploaded to the S3 bucket and will execute the job.\nAmazon S3: This is AWS\u0026rsquo;s cloud storage service that offers scalable storage for different types of data like images, videos, and files.\nAWS Glue DataBrew: AWS Glue DataBrew is a visual data preparation tool that enables users to clean and normalize data without writing any code.\nAWS Lambda: AWS Lambda is a serverless, event-driven compute service that lets you run code for virtually any type of application or backend service without provisioning or managing servers.\nContent Introduction Preparing AWS S3 Create the Execution Roles Set Up a Glue Databrew Project Create a Lambda Function Clean up "
+},
+{
+	"uri": "/5-create-lambda-automation/5.2-configure-lambda/",
+	"title": "Configure the Lambda Function",
+	"tags": [],
+	"description": "",
+	"content": "Configure the Lambda Function Scroll down to the Code source section of the Lambda function, replace the code in the lambda_function.py file with the following, and click Deploy to deploy the code. import boto3 def lambda_handler(event, context): s3_bucket = event[\u0026#39;Records\u0026#39;][0][\u0026#39;s3\u0026#39;][\u0026#39;bucket\u0026#39;][\u0026#39;name\u0026#39;] s3_object_key = event[\u0026#39;Records\u0026#39;][0][\u0026#39;s3\u0026#39;][\u0026#39;object\u0026#39;][\u0026#39;key\u0026#39;] databrew_client = boto3.client(\u0026#39;databrew\u0026#39;) databrew_client.update_dataset( Name=\u0026#39;BrewedData\u0026#39;, Input={ \u0026#39;S3InputDefinition\u0026#39;: { \u0026#39;Bucket\u0026#39;: s3_bucket, \u0026#39;Key\u0026#39;: s3_object_key } } ) response = databrew_client.start_job_run( Name=\u0026#39;BrewedDataJob\u0026#39; ) Scroll up to the Function overview section and click the Add trigger button. Select S3 from the Select a source drop-down menu. Under Bucket section, select data-bucket-databrew.\nUnder Prefix section, enter Input/.\nUnder Suffix section, enter .csv.\nSelect the check mark on the left side of the acknowledgment and click Add to add the trigger. "
+},
+{
+	"uri": "/4-databrew-project/4.2-create-project/",
+	"title": "Create a project",
+	"tags": [],
+	"description": "",
+	"content": "Create a project On the DataBrew \u0026gt; Datasets page, click BrewedData. Click Create project with this dataset. Under the Project name section, enter BrewedDataProject. Under the Select a dataset section, select My datasets and then select the BrewedData dataset. Under the Permissions section, click the Role name drop-down list and select the AWSGlueDataBrewRole role. Click the Create Project. It will take a few minutes for the project to be created.\n"
+},
+{
+	"uri": "/3-create-iam-role/3.2-role-lambda/",
+	"title": "Create a role for Lambda function",
+	"tags": [],
+	"description": "",
+	"content": "Create a role for Lambda function Navigate to the AWS Management Console, search for and select IAM. Click Roles under Access management on the sidebar. Click Create role to create a new IAM role. Under Trusted entity type, select AWS service. Click Choose a service or use case, then search Lambda and choose Lambda. Click Next to proceed to the next step. In the search bar, search and select TriggerExecutionPolicy then click Next. In the Role name section, name the role TriggerExecutionRole and then click Create role. "
+},
+{
+	"uri": "/2-prerequiste/2.2-createiamrole/",
+	"title": "Create folders in the bucket",
+	"tags": [],
+	"description": "",
+	"content": "Create folders in the bucket Open the bucket data-bucket-databrew . Click Create folder. In the folder name, name it Input. Create another folder named Output by following the process above. "
+},
+{
+	"uri": "/6-clear-up/6.2-delete-databrew-job/",
+	"title": "Delete the AWS Glue Databrew job",
+	"tags": [],
+	"description": "",
+	"content": "Delete the AWS Glue Databrew job Navigate to the AWS Management Console, search for and select AWS Glue DataBrew, then click Jobs. Select the job we created in this lab. Click Actions, then click the Delete option. Click Delete in the Delete BrewedDataJob? pop-up. "
+},
+{
+	"uri": "/2-prerequiste/",
+	"title": "Preparing AWS S3 ",
+	"tags": [],
+	"description": "",
+	"content": "In this step, we gonna create an S3 bucket. After that, we create Input and Output folders in this bucket and upload a CSV file to Input folder.\nThe architecture diagram: Content Create an S3 bucket Create folders in the bucket Upload CSV file "
+},
+{
+	"uri": "/4-databrew-project/4.3-build-recipes/",
+	"title": "Build a recipe",
+	"tags": [],
+	"description": "",
+	"content": "Build a recipe Let’s filter out the TV shows in the dataset, as follows: Click the type column and click the FILTER option from the top menu. In the Filer values board, under Filter condition, choose Is exactly and delete the Movie option. Click Add to recipe In the Filer values sidebar on the right, click Apply. Let’s sort the TV shows based on their release year in ascending order: Scroll to the right in the dataset and click the release_year column, click the SORT option from the top menu, and select Ascending. From the Sort column sidebar on the right, click Apply. In the show_id column, s is common in all the entries and doesn’t add much information to the column. Let’s remove s from the entries: Click the show_id column, click the CLEAN option from the top menu, and select the Letters option from the drop-down list. From the Remove letters sidebar on the right, click Apply. Column type doesn’t add much information because we already know that all the entries are TV shows, so let’s delete it. Click the type column, click the COLUMN option from the top menu, and select the Delete option from the drop-down list. From the Delete column sidebar on the right, click Apply. "
+},
+{
+	"uri": "/3-create-iam-role/",
+	"title": "Create the Execution Roles",
+	"tags": [],
+	"description": "",
+	"content": "In this step, we’ll create IAM roles to allow the user necessary permissions for using the AWS Glue DataBrew service and allow the Lambda function to perform operations on the AWS Glue DataBrew service and S3 bucket.\nThe architecture diagram: Content Create a role for AWS Glue DataBrew Create a role for Lambda function "
+},
+{
+	"uri": "/6-clear-up/6.3-delete-databrew-project/",
+	"title": "Delete the AWS Glue Databrew project",
+	"tags": [],
+	"description": "",
+	"content": "Delete the AWS Glue Databrew project Navigate to the AWS Management Console, search for and select AWS Glue DataBrew, then click Projects. Select the project we created in this lab. Click Actions, then click the Delete option. Select the Delete attached recipe option and click Delete in the Delete BrewedDataProject? pop-up. "
+},
+{
+	"uri": "/5-create-lambda-automation/5.3-test-automation/",
+	"title": "Test the Automation",
+	"tags": [],
+	"description": "",
+	"content": "Test the Automation Navigate to the Amazon S3 \u0026gt; Buckets page and choose data-bucket-databrew. Download the CSV file netflix2.csv and upload this file in Input folder. This will trigger the TriggerLambda function, which in turn will run the job on the data and save results in the S3 bucket. We can verify this by navigating to the DataBrew \u0026gt; Jobs page and noticing that the status of the BrewedDataJob is Running. As soon as the job status converts to Succeeded, navigate to the Output folder of the S3 bucket. Click the new BrewedDataJob\u0026hellip; folder. Query the CSV file as we did before after running the job with the same query. "
+},
+{
+	"uri": "/2-prerequiste/2.3-upcsvfile/",
+	"title": "Upload the CSV file to the bucket",
+	"tags": [],
+	"description": "",
+	"content": "Upload the CSV file to the bucket Download the CSV file by clicking this: netflix1.csv Open the bucket data-bucket-databrew . Click Input folder. Click Upload then click Add files. Choose netflix1 file rencetly download and click Open. Click Upload and wait for uploading succeeded. "
+},
+{
+	"uri": "/4-databrew-project/4.4-create-job/",
+	"title": "Create a job",
+	"tags": [],
+	"description": "",
+	"content": "Create a job On the BrewedDataProject page, click Create Job at the top right of the screen. Under Job name section, name it BrewedDataJob. Under the S3 location, enter s3://data-bucket-databrew/Output/. Click the Settings button on the top right of the Job output settings section. Under the File partitioning section, select the Single file output option and click Save. Under the Permissions section, click the Role name drop-down list, choose the Choose an existing IAM role section, select the AWSGlueDataBrewRole role. Click Create and run job. "
+},
+{
+	"uri": "/6-clear-up/6.4-delete-databrew-dataset/",
+	"title": "Delete the AWS Glue Databrew dataset",
+	"tags": [],
+	"description": "",
+	"content": "Delete the AWS Glue Databrew dataset Navigate to the AWS Management Console, search for and select AWS Glue DataBrew, then click Datasets. Select the dataset we created in this lab. Click Actions, then click the Delete option. Click Delete in the Delete BrewedData? pop-up. "
+},
+{
+	"uri": "/4-databrew-project/",
+	"title": "Set Up a Glue DataBrew Project",
+	"tags": [],
+	"description": "",
+	"content": "AWS Glue DataBrew jobs allow us to execute a project and save the results in sources like Amazon S3. In this step, we’ll create a job out of the project. With this job, we can execute the project, which will perform the four data processing steps listed in the recipe on the dataset and save the results in an output directory.\nThe architecture diagram: Content Connect to a dataset Create a project Build a recipe Create a job Verify the result "
+},
+{
+	"uri": "/5-create-lambda-automation/",
+	"title": "Create a Lambda Function",
+	"tags": [],
+	"description": "",
+	"content": "AWS Lambda functions allow us to execute code without maintaining or deploying servers. They can be considered a serverless design core component and only charge consumers for the compute time used. Lambda supports various programming languages, including Python, Java, Go, and Ruby. We’ll use this function for executing the DataBrew job when a new CSV file is uploaded to the bucket. It will read the file, execute the AWS Glue DataBrew job we defined earlier on the document, and write the resulting file in the bucket.\nThe architecture diagram: Content Create a Lambda Function Configure the Lambda Function Test the automation "
+},
+{
+	"uri": "/6-clear-up/6.5-delete-iam/",
+	"title": "Delete the IAM roles",
+	"tags": [],
+	"description": "",
+	"content": "Delete the IAM roles Navigate to the AWS Management Console, search for and select IAM, then click Roles. Select AWSGlueDataBrewServiceRole and TriggerExecutionRole from the list. Click Delete and enter delete in the confirmation pop-up. Click Delete. "
+},
+{
+	"uri": "/4-databrew-project/4.5-check-result/",
+	"title": "Verify the result",
+	"tags": [],
+	"description": "",
+	"content": "Verify the result Navigate to the Amazon S3 \u0026gt; Buckets page and click data-bucket-databrew bucket. Click the Output folder and click the BrewedDataJob\u0026hellip;. folder. Select the file inside the folder, click Actions, and select the Query with S3 select option. Scroll down to the SQL query section and enter the following query: SELECT \\* FROM s3object s LIMIT 5 Click Run SQL query. "
+},
+{
+	"uri": "/6-clear-up/",
+	"title": "Clean Up",
+	"tags": [],
+	"description": "",
+	"content": "To finish this lab, we’ll delete all our created resources. Let’s clear up these resources in reverse order of creation, starting with the Lambda function.\nContent Delete the Lambda function Delete the AWS Glue Databrew job Delete the AWS Glue Databrew project Delete the AWS Glue Databrew dataset Delete the IAM roles Delete the S3 bucket "
+},
+{
+	"uri": "/6-clear-up/6.6-delete-s3/",
+	"title": "Delete the S3 bucket",
+	"tags": [],
+	"description": "",
+	"content": "Delete the S3 bucket Navigate to the AWS Management Console, search for and select S3, then select data-bucket-databrew bucket. Click the Empty button to delete all objects in the bucket. Enter permanently delete in the text field and confirm the deletion of the objects. Click Delete, then enter the bucket name and confirm the deletion of the bucket. "
+},
+{
+	"uri": "/categories/",
+	"title": "Categories",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "/tags/",
+	"title": "Tags",
+	"tags": [],
+	"description": "",
+	"content": ""
+}]
